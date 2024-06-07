@@ -1,0 +1,162 @@
+﻿@* @model IEnumerable<ArtworkModel> *@
+@model List<PackageModel>
+@{
+    ViewData["Title"] = "Home Page";
+}
+<style>
+    .popup {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 9999;
+        text-align: center;
+        color: black;
+        background-color: white;
+    }
+
+    .column.first {
+        padding: 10px;
+        margin-left : 30px;
+    }
+
+    .dt-sc-one-fourth {
+        width: 22%;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .qr-code-container {
+        width: 200px;
+        height: 200px;
+        margin: 0 auto;
+        border: 1px solid #ccc;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+        .qr-code-container img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+</style>
+        <div class="dt-sc-pricing-table">
+            @foreach (var item in Model)
+            {
+                <div class="column dt-sc-one-fourth first">
+                    <div class="dt-sc-pr-tb-col type1">
+                        <div class="dt-sc-tb-header">
+                            <div class="dt-sc-price">
+                                <div class="dt-sc-price-content">
+                                    <h2>@item.Price VND</h2>
+                                    <span>/ @item.Quantity Post</span>
+                                </div>
+                            </div>
+                            <div class="dt-sc-tb-title">
+                                <h5> @item.Name Package </h5>
+                            </div>
+                        </div>
+                        <ul class="dt-sc-tb-content">
+                            <li> Sketches @item.Id </li>
+                            <li> Water Painting </li>
+                            <li> Crayon painting </li>
+                            <li> Dropper Art </li>
+                            <li> Canvas Print </li>
+                        </ul>
+                        <button class="showModalBtn dt-sc-button medium type1" data-item-name="@item.Name" data-item-price="@item.Price" data-item-package="@item.Id">Buy</button>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            }
+        </div>
+<div class="popup" id="myModal">
+    <h2 style="color:black">Mã QR thanh toán tự động</h2>
+    <h4 id="popupTitle" style="color:black"></h4>
+    <p id="popupContent"></p>
+    <p>Người thụ hưởng: Do Duy Khanh</p>
+    <img class="qr-code-container" src="https://img.vietqr.io/image/MB-113366668888-qr_only.png" alt="QR code">
+    <p id="popupNoti"></p>
+    <div class="clear"></div>
+    <button type="submit" class="dt-sc-button medium type1" onclick="closePopup()">Close</button>
+    <form id="myForm" asp-action="CreatePoster" method="post" style="display: none;">
+        <div class="form-group">
+            <input type="number" class="form-control" name="PackageId" id="packageIdInput">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+@section Scripts {
+    <script>
+        let itemPackage;
+        var qrCodeImage = document.querySelector('.qr-code-container');
+        $(document).ready(function () {
+            // Attach click event to all buttons with class "showModalBtn"
+            $(".showModalBtn").on("click", function () {
+                // Get data attributes from the clicked button
+                var itemName = $(this).data("item-name");
+                var itemPrice = $(this).data("item-price");
+                itemPackage = $(this).data("item-package");
+                var itemQR = `https://img.vietqr.io/image/970422-0868349194-qr_only.png?amount=${itemPrice}&addInfo=${itemName}&accountName=DoDuyKhanh`;
+                qrCodeImage.src = itemQR;
+                // Set the content of the popup
+                $("#popupTitle").text(itemName);
+                $("#popupPackage").text(itemPackage);
+                $("#popupContent").text("Price: " + itemPrice+ " VND");
+                $("#popupNoti").text("Đang chờ thanh toán");
+                // Show the popup
+                $("#myModal").show();
+                setTimeout(() => {
+                    setInterval(() => {
+                        checkPayment(itemPrice, itemName);
+                    }, 1000);
+                }, 20000);
+            });
+        });
+        function autoSubmitForm(packageId) {
+            var form = document.getElementById("myForm");
+            var packageIdInput = document.getElementById("packageIdInput");
+            packageIdInput.value = packageId;
+            form.submit();
+        }
+        function closePopup() {
+            $("#myModal").hide();
+        }
+        let isSuccess = false;
+        async function checkPayment(price, content) {
+            if (isSuccess) {
+                return;
+            } else {
+                try {
+                    const response = await fetch(
+                        "https://script.google.com/macros/s/AKfycbyz0qU2AcuFql6AgdKIaNrCt-rliPhMHBrAITzf2enHElaugLuulzDqV2OGigvLgEy07g/exec"
+                    );
+                    const data = await response.json();
+                    const lastPaid = data.data[data.data.length - 1];
+                    lastPrice = lastPaid["Giá trị"];
+                    lastContent = lastPaid["Mô tả"];
+                    if (lastPrice >= price && lastContent.includes(content)) {
+                        isSuccess = true;
+                        $("#popupNoti").text("Thanh Toán Thành Công");
+                        autoSubmitForm(itemPackage);
+                    } else {
+                        $("#popupNoti").text("Không Thành Công");
+                        closePopup();
+                    }
+                } catch (error) {
+                    console.log("Lỗi: ", error);
+                }
+            }
+        }
+    </script>
+}
+

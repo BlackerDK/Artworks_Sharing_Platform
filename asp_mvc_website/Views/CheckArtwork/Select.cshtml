@@ -1,0 +1,122 @@
+﻿@model IEnumerable<GetUserNotificationDTO1>
+
+@{
+	Layout = null;
+	var totalPage = Int64.Parse(ViewData["totalPage"].ToString());
+	var currentPage = Int64.Parse(ViewData["currentPage"].ToString()); ;
+}
+
+<div class="panel panel-default">
+	<div class="panel-body">
+		<div class="table-responsive">
+			<table class="shop_table cart table table-striped table-bordered table-hover">
+				<thead>
+					<tr>
+						<th>Artwork</th>
+						<th>Title</th>
+						<th>Description</th>
+						<th>Date time</th>
+						<th>Image</th>
+						<th>Action</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model)
+					{
+						<tr class="cart_table_item">
+
+							<td class="product-thumbnail">
+								<a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal-@item.ArtWorkVM.ArtworkId"><h5>@item.ArtWorkVM.Title</h5></a>
+							</td>
+
+							<td class="product-name">
+								<h6>@item.NotificationVM.Title</h6>
+							</td>
+
+							<td class="product-subtotal">
+								<span class="amount"> @item.NotificationVM.Description</span>
+							</td>
+
+							<td class="product-status">
+								<span class="">@item.Date</span>
+							</td>
+
+							<td class="product-remove">
+								<a href=""><img src="@item.ArtWorkImageVM.Image" style="width:25%;" class="attachment-shop_thumbnail wp-post-image" alt="T_7_front" /></a>
+							</td>
+							<td>
+								@if (item.NotificationVM.notiStatus == asp_mvc_website.Enums.NotiStatus.ConfirmPost)
+								{
+									<input id="userID-@item.ArtWorkVM.ArtworkId" value="@item.ArtWorkVM.UserId" type="hidden" />
+									<a href="" class="Accept" title="Accept artwork" onclick="acceptArtwork(@item.ArtWorkVM.ArtworkId,true,@item.NotificationVM.Id)">Accept</a>
+									<a href="" data-bs-toggle="modal" data-bs-target="#reason-@item.ArtWorkVM.ArtworkId" class="Reject" title="Reject artwork">Reject</a>
+								}
+								else if (item.NotificationVM.notiStatus == asp_mvc_website.Enums.NotiStatus.AcceptPost)
+								{
+									<h6 style="color:green">Accepted</h6>
+								}
+								else
+								{
+									<h6 style="color:red">Deny</h6>
+								}
+							</td>
+						</tr>
+						@* ================Detail Modal ===============*@
+						<div class="modal" tabindex="-1" style="margin-top : 100px" id="exampleModal-@item.ArtWorkVM.ArtworkId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-lg modal-dialog-scrollable">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="staticBackdropLabel">Artwork title</h5>
+									</div>
+									<div class="modal-body">
+										<img src="@item.ArtWorkImageVM.Image" style="width:50%;" />
+										<h3> Title : @item.ArtWorkVM.Title</h3>
+										<h3>Description : @item.ArtWorkVM.Description</h3>
+										<h3>Price : @item.ArtWorkVM.Price</h3>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closePackage">Close</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						@* ================Deny Modal ===============*@
+						<div class="modal" tabindex="-1" style="margin-top : 100px" id="reason-@item.ArtWorkVM.ArtworkId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-lg modal-dialog-scrollable">
+								<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="staticBackdropLabel">Artwork Reject</h5>
+									</div>
+									<div class="modal-body">
+										<label for="reason">Reason</label>
+										<textarea id="text-reason-@item.ArtWorkVM.ArtworkId" name="reason" rows="4" cols="50"></textarea>
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closePackage">Close</button>
+										<button type="button" action="" class="Reject" onclick="acceptArtwork(@item.ArtWorkVM.ArtworkId,false,@item.NotificationVM.Id)">Reject</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					}
+				</tbody>
+			</table>
+			<div style="margin-top: 25px;" class="text-center">
+				<div id="pagination" class="paging-list">
+				</div>
+			</div>
+		</div>
+
+	</div>
+</div>
+<!--End Advanced Tables -->
+<div id="pagination">
+	<ul class="pagination">
+		@for (var i = 1; i <= totalPage; i++)
+		{
+			<li class="page-item @(i == currentPage ? "active" : "")">
+				<a href="#" id="page_number" class="page-link" onclick="changePage(@i)">@i</a>
+			</li>
+		}
+	</ul>
+</div>

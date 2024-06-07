@@ -1,0 +1,197 @@
+﻿@model ProfileModel
+@{
+	ViewData["Title"] = "Profile Page";
+	var isLike = false ;
+	var currentUserId = ViewData["currentUserId"].ToString();
+	var UserIdIndex = Model.UserId;
+}
+<style>
+	/* CSS để ẩn popup ban đầu */
+	.popupComment {
+		display: none;
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background-color: black;
+		padding: 20px;
+		border: 1px solid #ccc;
+		box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+		width:500px;
+		overflow-y: auto;
+	}
+
+	.close-btn {
+		position: absolute;
+		top: 5px; /* điều chỉnh khoảng cách từ top */
+		right: 10px; /* điều chỉnh khoảng cách từ right */
+		border: none;
+		font-size: 18px;
+		cursor: pointer;
+		z-index: 1; /* đảm bảo nút đóng hiển thị trên cùng */
+	}
+	/* CSS để style button */
+</style>
+<section id="primary" class="content-full-width">
+	<div class="container">
+		<div class="profile">
+			<div class="profile-header">
+				<img src="https://img.freepik.com/free-photo/painting-mountain-lake-with-mountain-background_188544-9126.jpg" alt="Background Image" class="background-image">
+				<img src="~/images/profile.png" alt="Avatar" class="avatar">
+				<h1 class="name">@Model.FirstName @Model.LastName</h1>
+				@if (Model.poster!=null)
+				{
+					<div style="font-size:15px" class="name"> Quantity can post: @Model.poster.QuantityPost</div>
+				}
+				<div style="text-align:left" data-userId="@UserIdIndex"></div>
+				<div class="profile-details">
+					<div class="additional-info">
+						<p>Birthday: @Model.Birthday</p> <p>Email: @Model.Email</p>
+					</div>
+				</div>
+			</div>
+				@foreach (var item in Model.artworks)
+				{
+				{ isLike = false; }
+				<div class="product-container">
+					<a href="@Url.Action("Index", "ShopDetail",new{id = item.artworkId})">
+						<div class="product-thumb"> <img src="@item.Image"/> </div>
+					</a>
+					<div class="product-details">
+						<h3 class="product-title">@item.Title</h3>
+						<p class="product-price">@item.Price VND</p>
+						<p class="product-price">@item.Description</p>
+						<div class="product-actions">
+							@foreach(var user in item.likeNumber)
+							{
+								@if (user.UserId.Equals(currentUserId))
+								{
+									<button data-aid="@item.artworkId" data-id="@currentUserId" class="product-like" style="background-color: lightskyblue">
+										<img src="~/images/like.png" width="15px" />
+										<span class="like-text">Like</span>
+
+										<span class="like-count">@item.likeNumber.Count()</span> <!-- Example for displaying like count -->
+									</button>
+									{
+										isLike = true;
+									}
+								} 
+							} 
+							@if(!isLike)
+							{
+								<button data-aid="@item.artworkId" data-id="@currentUserId" class="product-like">
+									<img src="~/images/like.png" width="15px" />
+									<span class="like-text">Like</span>
+
+									<span class="like-count">@item.likeNumber.Count()</span> <!-- Example for displaying like count -->
+								</button>
+							}
+							<button class="product-comment" data-bs-toggle="modal" data-bs-target="#modal-comment-@item.artworkId">
+								<img src="~/images/comment.png" width="15px" />
+								<span class="comment-text">Comment</span>
+								<span class="comment-count">@item.commentNumber.Count()</span> <!-- Example for displaying comment count -->
+							</button>
+							
+							</div>
+							<div class="modal fade" id="modal-comment-@item.artworkId" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+							<div class="modal-dialog modal-dialog-centered">
+									<div class="modal-content">
+										<div class="modal-header">
+										@* <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button> *@
+											<h4 class="modal-title text-danger" id="myModalLabel">COMMENT LIST</h4>
+										</div>
+										<div class="modal-body">
+										<ul id="commentList">
+											@foreach (var listcmt in @item.commentNumber)
+											{
+												<li style="color:black ; text-align:left"><img src="~/images/authour.png" width="15px"> - @listcmt.Content</li>
+											}											
+										</ul>
+										<div class="card-body py-1">
+											<form>
+												<div>
+													<label for="exampleFormControlTextarea1" class="visually-hidden">
+														Comment
+													</label>
+													<textarea class="form-control form-control-sm border border-2 rounded-1"
+															  id="myTextarea-@item.artworkId"
+															  style="height: 50px"
+															  placeholder="Add a comment..."
+															  minlength="3"
+															  maxlength="255"
+															  required></textarea>
+												</div>
+											</form>
+										</div>
+										<div class="modal-footer">
+											<button class="btn btn-primary btn-sm" onclick="clearInput(@item.artworkId)">
+												Cancel
+											</button>
+											<button type="submit" class="product-cmt" data-aid="@item.artworkId" data-id="@currentUserId">
+												Submit
+											</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				}			
+		</div>
+	</div>
+</section>
+<script>
+	document.addEventListener("DOMContentLoaded", function () {
+		var sliderContainer = document.getElementById("slider-container");
+		if (sliderContainer) {
+			sliderContainer.parentNode.removeChild(sliderContainer);
+		}
+	});
+	$('.product-like').click(function () {
+		var userId = $(this).data("id");
+		var artworkId = $(this).data("aid");
+		
+		var data = {
+			userId,
+			artworkId,
+		};
+		$.ajax({
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			type: "POST",
+			url: "/Profile/LikeArtwork",
+			data: JSON.stringify(data),
+			success: function (data) {
+				window.location.reload();				
+			},
+		});
+	})
+	function clearInput(id) {
+		document.getElementById('myTextarea-'+id).value = '';
+	}
+	$('.product-cmt').click(function () {
+		var userId = $(this).data("id");
+		var artworkId = $(this).data("aid");
+		var content = document.getElementById('myTextarea-' + artworkId).value;
+		var data = {
+			content,			
+			artworkId,
+			userId,
+		};
+		console.log(data);
+		$.ajax({
+			dataType: "json",
+			contentType: "application/json; charset=utf-8",
+			type: "POST",
+			url: "/Profile/CommentArt",
+			data: JSON.stringify(data),
+			success: function (data) {
+				$('.modal-backdrop').hide();
+				$('#userRoleModal-' + userId).hide();
+				window.location.reload();
+			},
+		});
+	})
+</script>
+

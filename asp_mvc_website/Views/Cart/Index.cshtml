@@ -1,0 +1,226 @@
+﻿@model CartResponseVM
+
+@{
+	var errorMsg = ViewData["ErrorMsg"] != null ? ViewData["ErrorMsg"].ToString() : "";
+}
+	<style>
+	#checkoutButtonDisable.disabled {
+		pointer-events: none; /* Disable pointer events */
+		opacity: 0.5; /* Reduce opacity to visually indicate it's disabled */
+	}
+	</style>
+
+<div class="breadcrumb">
+	<div class="container">
+		<h2>Shop <span>Cart</span></h2>
+		<div class="user-summary">
+			<div class="account-links">
+				<a href="#">My Account</a>
+			</div>
+			<div class="cart-count">
+				@if (Model != null)
+				{
+					<a href="#">Shopping Bag: @Model.total items</a>
+				} else
+				{
+					<a href="#">Shopping Bag: 0 items</a>
+				}
+			</div>
+		</div>
+	</div>
+</div>
+<section id="primary" class="content-full-width">
+	<div class="container" id="cartContainer">
+		<div class="woocommerce">
+			@if(Model != null)
+			{
+				@if (Model.total == 0)
+				{
+					<h2>No item in cart!</h2>
+				}
+				else
+				{
+					<form asp-controller="Shop" asp-action="Index" method="get">
+						<table class="shop_table cart">
+							<thead>
+								<tr>
+									<th class="product-thumbnail" style="width:170px;">Image</th>
+									<th class="product-name">Name</th>
+									<th class="product-price">Price</th>
+									<th class="product-subtotal">Status</th>
+									<th class="product-subtotal" style="width:207px;"></th>
+									<th class="product-remove"></th>
+								</tr>
+							</thead>
+							<tbody>
+								@if (!string.IsNullOrEmpty(errorMsg))
+								{
+									
+								}
+								@foreach (var item in Model.data)
+								{
+								
+									<tr class="cart_table_item" id="artwork_@item.ArtWorkId">
+
+										<td class="product-thumbnail" style="padding:5px;">
+											<a href="@Url.Action("Index", "ShopDetail",new{id = item.ArtWorkId})">
+												<img src="@item.ArtWorkImage" style="width:100%;" class="attachment-shop_thumbnail wp-post-image" alt="T_7_front" />
+											</a>
+										</td>
+
+										<td class="product-name">
+											<h6><a href="@Url.Action("Index", "ShopDetail",new{id = item.ArtWorkId})">@item.Title</a></h6>
+										</td>
+
+										<td class="product-subtotal">
+											<span class="amount"><i class=""></i> @item.Price VND</span>
+										</td>
+
+										<td class="product-status">
+											@switch (item.ArtWork.Status)
+											{
+												case ArtWorkStatus.PendingConfirmation:
+													{
+														<span class="">Pending Confirmation</span>
+														break;
+													}
+
+												case ArtWorkStatus.InProgress:
+													{
+														<span class="">In Progress</span>
+														break;
+													}
+
+												case ArtWorkStatus.Sold:
+													{
+														<span class="">Sold</span>
+														break;
+													}
+												case ArtWorkStatus.SoldPPendingConfirm:
+													{
+														<span class="">Sold Pending Confirm</span>
+														break;
+													}
+												default:
+													{
+														<span class="">Pending Confirmation!!</span>
+														break;
+													}
+											}
+										</td>
+
+										<td class="product-status" style="padding:0px;">
+											@if (item.ArtWork.Status == ArtWorkStatus.SoldPPendingConfirm || item.ArtWork.Status == ArtWorkStatus.Sold)
+											{
+												<a id="checkoutButtonDisable" class="dt-sc-button medium type2 with-icon" href="#">
+													<i class="fa fa-shopping-cart"></i> <span>Pending Confirm</span>
+												</a>
+											}
+											else
+											{
+												<a id="checkoutButton" class="dt-sc-button medium type2 with-icon" href="/Cart/CheckOut?artworkId=@item.ArtWorkId">
+													<i class="fa fa-shopping-cart"></i> <span>Proceed to Checkout</span>
+												</a>
+											}
+										</td>
+
+										<td class="product-remove">
+											@if (item.ArtWork.Status == ArtWorkStatus.SoldPPendingConfirm || item.ArtWork.Status == ArtWorkStatus.Sold)
+											{
+												<a href="#" class="remove" title=""></a>
+											}
+											else
+											{
+												<a href="/Cart/DeleteArtwork?Id=@item.Id" class="remove" title="Remove this item" id="removeButton">&times;</a>
+											}
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+						<input type="submit" class="button" name="continue" value="Continue Shopping">
+					</form>
+				}
+			} else
+			{
+				<h2>No item in cart!</h2>
+			}
+			<div class="cart-collaterals">
+				<div class="cart_totals">
+					<h3>Cart description</h3>
+					<table>
+						<tbody>
+							<tr class="shipping">
+								<th>Shipping</th>
+								<td>Free Shipping<input type="hidden" name="shipping_method" id="shipping_method" value="free_shipping" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="dt-sc-hr-invisible-small"></div>
+</section>
+
+<script>
+	// function deleteProduct(Id) {
+	// 	console.log(Id)
+	// 	// Send an AJAX request to delete the product from the cart
+	// 	fetch('/Cart/DeleteArtwork/' + Id, {
+	// 		method: 'DELETE'
+	// 	})
+	// 		.then(response => {
+	// 			// Check if the request was successful
+	// 			if (response.ok) {
+	// 				// Remove the product from the cart display
+	// 				var productElement = document.getElementById('artwork_' + Id);
+	// 				if (productElement) {
+	// 					productElement.remove();
+	// 				}
+
+	// 				// Set focus to the cart container element
+	// 				var cartContainer = document.getElementById('cartContainer');
+	// 				if (cartContainer) {
+	// 					cartContainer.focus();
+	// 				}
+	// 			} else {
+	// 				console.error('Failed to delete product');
+	// 			}
+	// 		})
+	// 		.catch(error => {
+	// 			console.error('Error:', error);
+	// 		});
+	// }
+
+	// function updateProduct(artworkIdInput) {
+	// 	console.log(artworkIdInput);
+
+	// 	// Send a POST request to the controller action
+	// 	$.ajax({
+	// 		type: 'POST',
+	// 		url: '/Cart/CheckOut', // Adjust the URL to match your controller action
+	// 		contentType: 'application/json',
+	// 		data: JSON.stringify({ artworkId: artworkIdInput }), // Pass the artwork ID to the controller action
+	// 		success: function (response) {
+	// 			console.log(response);
+	// 			// Handle success if needed
+	// 		},
+	// 		error: function (xhr, status, error) {
+	// 			console.error(xhr.responseText);
+	// 			// Handle error if needed
+	// 		}
+	// 	});
+	// }
+	function formatCurrency(amount) {
+		return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+	}
+	var amountElements = document.getElementsByClassName("amount");
+	for (var i = 0; i < amountElements.length; i++) {
+		var amountText = amountElements[i].textContent;
+		var amount = parseFloat(amountText);
+		if (!isNaN(amount)) {
+			amountElements[i].textContent = formatCurrency(amount) + " VND";
+		}
+	}
+</script>

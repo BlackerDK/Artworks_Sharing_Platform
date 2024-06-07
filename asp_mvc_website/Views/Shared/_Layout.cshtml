@@ -1,0 +1,241 @@
+﻿@{
+
+}
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ASP</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Additional CSS Files -->
+    <link rel="shortcut icon" href="~/favicon.ico" type="image/x-icon" />
+
+    <link id="default-css" rel="stylesheet" href="~/style.css" type="text/css" media="all" />
+
+    <link href="~/css/animations.css" rel="stylesheet" type="text/css" media="all" />
+    <link id="shortcodes-css" href="~/css/shortcodes.css" rel="stylesheet" type="text/css" media="all" />
+    <link id="skin-css" href="~/skins/red/style.css" rel="stylesheet" media="all" />
+    <link href="~/css/isotope.css" rel="stylesheet" type="text/css" media="all" />
+    <link href="~/css/prettyPhoto.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="~/css/responsive.css" type="text/css" media="all" />
+    <link id="light-dark-css" href="~/dark/dark.css" rel="stylesheet" media="all" />
+
+    <link rel="stylesheet" href="~/css/font-awesome.min.css" type="text/css" />
+    @* <script src="~/js/modernizr.js"></script> *@
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="~/css/noti.css" type="text/css" />
+    <link rel="stylesheet" href="~/css/post.css" type="text/css" />
+    <style>
+        .menu.type1 li{
+            width:20%;
+        }
+    </style>
+</head>
+<body>
+    @using Newtonsoft.Json;
+    @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+    @{
+        var userName = HttpContextAccessor.HttpContext.Session.GetString("UserEmail");
+        var userId = HttpContextAccessor.HttpContext.Session.GetString("UserId");
+        string serializedList = HttpContextAccessor.HttpContext.Session.GetString("MyListSessionKey");
+        // List<GetUserNotificationDTO1> listNoti = null;
+
+        // if (serializedList != null)
+        // {
+        //     listNoti = JsonConvert.DeserializeObject<List<GetUserNotificationDTO1>>(serializedList);
+        // }
+    }
+
+    <div class="loader-wrapper">
+    </div>
+    <div class="wrapper">
+        <div class="inner-wrapper">
+            <div id="header-wrapper" class="dt-sticky-menu">
+                <div id="header" class="header">
+                    <div class="container menu-container">
+                        <a class="logo" href="/Home/Index"><img alt="Logo" src="~/images/logo.png" width="200" height="55"></a>
+                        <div class="notification" style="float:right;">                           
+                                <div class="notBtn">
+                                    <div class="number" style="width:35px; height:35px"></div>
+                                    @if (userId != null)
+                                    {
+                                    <a href="/Notification/Index/@userId">
+                                        <img src="~/images/notification.png" width="50px" alt="Alternate Text"/>
+                                        </a>
+                                            <div class="box">
+                                                <div class="display">
+                                                    <div class="nothing">
+                                                        <div class="cent">Looks Like you're all caught up!</div>
+                                                    </div>
+                                                    <div class="cont" id="notificationContainer">
+
+                                                        <!-- Notifications will be dynamically added here -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                    }
+                                    else
+                                    {
+                                        <img src="~/images/notification.png" width="50px" alt="Alternate Text" title="You need login!!!!" />
+                                    }
+                                </div>
+                            </a>
+                        </div>
+                        <a href="#" class="menu-trigger">
+                            <span></span>
+                        </a>
+                    </div>
+                </div>
+                <nav id="main-menu">
+                    <div id="dt-menu-toggle" class="dt-menu-toggle">
+                        Menu
+                        <span class="dt-menu-toggle-icon"></span>
+                    </div>
+                    <ul class="menu type1">
+                        <li class="current_page_item menu-item-simple-parent">
+                            <a href="/Home/Index">Home <span class="fa fa-home"></span></a>
+                            @* <ul class="sub-menu">
+                            <li class="current_page_item"><a href="http://www.wedesignthemes.com/html/redart/default">Default</a></li>
+                            <li><a href="http://www.wedesignthemes.com/html/redart/menu-overlay">Menu Overlay</a></li>
+                            <li><a href="http://www.wedesignthemes.com/html/redart/slide-bar">Slide Bar</a></li>
+                            <li><a href="http://www.wedesignthemes.com/html/redart/slider-over-menu">Slider Over Menu</a></li>
+                            </ul>
+                            <a class="dt-menu-expand">+</a>*@
+                        </li>
+                        <li class="menu-item-simple-parent">
+                            <a href="/Package/Index">Package<span class="fa fa-user-secret"></span></a>
+                        </li>
+                        @*                         <li class="menu-item-simple-parent">
+                        <a href="gallery.html">gallery <span class="fa fa-camera-retro"></span></a>
+                        <ul class="sub-menu">
+                        <li><a href="gallery-detail.html">gallery detail</a></li>
+                        <li><a href="gallery-detail-with-lhs.html">gallery-detail-left-sidebar</a></li>
+                        <li><a href="gallery-detail-with-rhs.html">gallery-detail-right-sidebar</a></li>
+                        </ul>
+                        <a class="dt-menu-expand">+</a>
+                        </li>
+                        *@
+                        <li class="menu-item-simple-parent">
+                            <a href="/Shop/Index">Shop <span class="fa fa-cart-plus"></span></a>
+                        </li>
+                        <li class="menu-item-simple-parent">
+                            <a href="/cart">Cart <span class="fa fa-cart-plus"></span></a>
+                        </li>
+                        @if (userName != null)
+                        {
+                            <li class="menu-item-simple-parent" style="float:right;">
+                                <a asp-action ="Logout" asp-controller="User">
+                                    Logout<span class="fa fa-pencil-square-o"></span></a> <!--Thay đổi thành logout-->
+                                <ul class="sub-menu">
+                                    <li><a href="/Profile/Index/@userId">Hello @userName!</a></li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {                          
+                            <li class="menu-item-simple-parent" style="float:right;">
+                                <a href="/User/Login">Login<span class="fa fa-pencil-square-o"></span></a>
+                                <ul class="sub-menu">
+                                    <li><a href="/User/Register">Register</a></li>
+                                </ul>
+                            </li>
+                        }
+                        <li class="menu-item-simple-parent">
+
+                        </li>                      
+                    </ul>
+                </nav>
+            </div>
+            <div class="slider-container" id="slider-container">
+                <div class="slider fullwidth-section parallax"></div>
+            </div>
+            <div id="main">
+                @*                  <div class="container full">
+                <main role="main" class="">
+                @RenderBody()
+                @RenderSection("Scripts", required: false)
+                </main>
+                </div> *@
+
+                @RenderBody()
+                @RenderSection("Scripts", required: false)
+                <footer id="footer" class="animate" data-animation="fadeIn" data-delay="100">
+                    <div class="container">
+                        <div class="copyright">
+                            <ul class="footer-links">
+                                <li><a href="#">Contact us</a></li>
+                                <li><a href="#">Privacy policy</a></li>
+                                <li><a href="#">Terms of use</a></li>
+                                <li><a href="#">Faq</a></li>
+                            </ul>
+                            <ul class="payment-options">
+                                <li><a href="#" class="fa fa-cc-amex"></a></li>
+                                <li><a href="#" class="fa fa-cc-mastercard"></a></li>
+                                <li><a href="#" class="fa fa-cc-visa"></a></li>
+                                <li><a href="#" class="fa fa-cc-discover"></a></li>
+                                <li><a href="#" class="fa fa-cc-paypal"></a></li>
+                            </ul>
+                            <p>© 2015 <a href="#">RED ART</a>. All rights reserved.</p>
+                        </div>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="~/js/jquery-1.11.2.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/js/jquery.isotope.min.js"></script>
+    <script src="~/js/jquery.prettyPhoto.js" type="text/javascript"></script>
+    <script src="~/js/jquery.tipTip.minified.js" type="text/javascript"></script>
+    <script src="~/js/custom.js"></script>
+    <script src="~/js/jsplugins.js" type="text/javascript"></script>
+@*     <script src="/js/post.js" type="text/javascript"></script> *@
+
+    <script src="~/js/jquery.inview.js" type="text/javascript"></script>
+    <script src="~/js/jquery.viewport.js" type="text/javascript"></script>
+    <script src="~/js/jquery.validate.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="~/js/jquery.bxslider.min.js"></script>
+    <script>
+        $.ajax({
+            type: "GET",
+            url: "/UserNotifcation/GetNotify",
+            data: { id: '@userId' },
+            success: function (notidata) {
+                console.log(notidata.data);
+                var notificationContainer = $("#notificationContainer");
+                var unreadCount = 0;
+
+                notidata.data.forEach(function (notification) {
+                    console.log(notification);
+                    var anchor = $("<a>").attr("href", "#");
+                    if (notification.notificationVM.isRead == false) {
+                        unreadCount++;
+                        var profileImage = $("<img>").addClass("profilenoti").attr("src", notification.artWorkImageVM.image);
+                        profileImage.css("margin-left", "15px");
+                        var txtDiv = $("<div>").addClass("txt").text(notification.notificationVM.title);
+                        var subTxtDiv = $("<div>").addClass("txt sub").text("Notification Title: " + notification.notificationVM.description);
+                        anchor.append(profileImage).append(txtDiv).append(subTxtDiv);
+                        var notificationItem = $("<div>").addClass("sec new");
+                        notificationItem.append(anchor);
+                        notificationContainer.append(notificationItem);
+                    }
+                });
+
+                $(".number").text(unreadCount);
+
+                if (unreadCount === 0) {
+                    $(".number").hide();
+                    notificationContainer.html("<div class='sec new no-notification'>You don't have new notifications</div>");
+                }
+            }
+        });
+    </script>
+
+
+
+</body>
+</html>
+
+

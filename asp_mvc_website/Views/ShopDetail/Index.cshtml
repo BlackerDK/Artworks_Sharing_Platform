@@ -1,0 +1,205 @@
+﻿@model ShopDetailModel
+@{
+    ViewBag.Title = "Shop Detail";
+}
+
+<div class="breadcrumb">
+    <div class="container">
+        <h2>Artwork <span>Detail</span></h2>
+    </div>
+</div>
+<section id="primary" class="content-full-width">
+    <div class="container">
+        <div class="main-title animate" data-animation="pullDown" data-delay="100">
+            <h3> @Model.artworkModel.Title </h3>
+            <p>@Model.artworkModel.Title</p>
+        </div>
+        <div class="cart-wrapper">
+            <div class="dt-sc-three-fifth column first">
+                <div class="cart-thumb">
+                    <a href="#">
+                        <img src="@Model.artworkModel.Image" alt="" title="Acrylic" style="width:100%">
+                    </a>
+                </div>
+                <div class="commententries">
+                    <div><a class="dt-sc-button small type2">Buy</a> <a class="dt-sc-button small type2">Add to cart</a></div>
+
+                   @*  <h4> Comments ( 3 ) </h4>
+                    <h6><a href="#"><i class="fa fa-comments-o"></i>Add Comments</a></h6>
+                    <ul class="commentlist">
+                        <li>
+                            <div class="comment">
+                                <header class="comment-author">
+                                    <img title="" alt="image" src="images/post-img1.jpg">
+                                </header>
+                                <div class="comment-details">
+                                    <div class="author-name">
+                                        <a href="#">Callahan James</a>
+                                    </div>
+                                    <div class="commentmetadata"><span>/</span> Acrylic Painting</div>
+                                    <div title="Rated 5.00 out of 5" class="star-rating"><span style="width:80%"></span></div>
+                                    <div class="comment-body">
+                                        <div class="comment-content">
+                                            <p>The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.</p>
+                                            <div class="author-metadata">
+                                                <p><span class="fa fa-comments"></span><a href="#"> 19 </a></p>
+                                                <p><span class="fa fa-folder-open"> </span><a href="#"> Art</a></p>
+                                                <p><span class="fa fa-calendar"></span><a href="#"> 05 Apr 2015 </a></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="children">
+                                <li>
+                                    <div class="comment">
+                                        <header class="comment-author">
+                                            <img title="" alt="image" src="images/post-img2.jpg">
+                                        </header>
+                                        <div class="comment-details">
+                                            <div class="author-name">
+                                                <a href="#">Sean Bean</a>
+                                            </div>
+                                            <div class="commentmetadata"><span>/</span> Sculpture</div>
+                                            <div title="Rated 5.00 out of 5" class="star-rating"><span style="width:70%"></span></div>
+                                            <div class="comment-body">
+                                                <div class="comment-content">
+                                                    <p>The wise man therefore always holds in these matters to this principle of selection: he rejects pleasures to secure other greater pleasures he rejects pleasures to secure other greater pleasures, or else he endures pains to avoid worse pains.</p>
+                                                    <div class="author-metadata">
+                                                        <p><span class="fa fa-comments"></span><a href="#"> 08 </a></p>
+                                                        <p><span class="fa fa-folder-open"> </span><a href="#"> Creative</a></p>
+                                                        <p><span class="fa fa-calendar"></span><a href="#"> 26 Aug 2015 </a></p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul> *@
+                </div>
+            </div>
+            <div class="dt-sc-two-fifth column">
+
+                <div class="post-author-details">
+                    <div class="entry-author-image">
+                        <img src="~/images/authour.png" alt="" title="" width="200px" />
+                    </div>
+                    <div class="author-title">
+                        <h5><a href="@Url.Action("Index","Profile",new{id = Model.artworkModel.UserId})">@Model.userModel.FirstName @Model.userModel.LastName</a></h5>                       
+                    </div>
+                    <div class="author-desc">
+                        <p>@Model.artworkModel.Description</p>
+                    </div>
+                </div>
+                <div class="project-details">
+                    <ul class="client-details">
+                        <li>
+                            <p><span>Title :</span>@Model.artworkModel.Title</p>
+                        </li>
+                        <li>
+                            <p><span>Artist :</span>@Model.userModel.FirstName @Model.userModel.LastName</p>
+                        </li>
+                        <li>
+                            <p><span>Description :</span>@Model.artworkModel.Description</p>
+                        </li>
+                        <li>
+                            <p><span>Uploaded :</span>@Model.artworkModel.CreateOn </p>
+                        </li>
+                        <li>
+                            <span>Price :</span> <p class="amount">@Model.artworkModel.Price VND</p>
+                        </li>
+                        @*                         <li>
+                        <p><span>Statistics :</span><i class="fa fa-eye"></i>2,318</p>
+                        </li>
+                        <li>
+                        <p><span>Colors :</span><a href="#" class="yellow"></a><a href="#" class="green"></a><a href="#" class="orange"></a><a href="#" class="red"></a></p>
+                        </li>
+                        <li>
+                        <p><span>Sales Sheet :</span>PDF</p>
+                        </li> *@                       
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*  <a id="btnAdd" class="dt-sc-button small type3">Small Button</a><div class="clear"> </div>
+    <div class="modal" tabindex="-1" id="PostModal">
+    <div class="modal-dialog">
+    <div class="modal-content">
+    <div class="modal-header">
+    <h5 class="modal-title">Modal title</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    </div>
+    <div class="modal-body">
+    <input type="hidden" id="artworkId" />
+    <div class="mb-2">
+    <div class="form-group">
+    <label for="title"> <span>Use title case to get a better result</span></label>
+    <input type="text" name="title" id="title" class="form-control" />
+    </div>
+    </div>
+    <div class="mb-2">
+    <div class="form-group" style="height: 200px;">
+    <label for="description">Description</label>
+    <textarea name="description" id="description" class="form-control" style="height: 170px;"></textarea>
+    </div>
+    </div>
+    <div class="mb-2">
+    <div class="form-group">
+    <label for="price">Price</label>
+    <input type="number" name="price" id="price" class="form-control" step="0.01" />
+    </div>
+    </div>
+    <div class="mb-2">
+    <div class="profile-picture">
+    <h1 class="upload-icon">
+    <i class="fa fa-plus fa-2x" aria-hidden="true"></i>
+    </h1>
+    <input class="file-uploader"
+    type="file"
+    name="image"
+    onchange="upload()"
+    accept="image/*" />
+    </div>
+    </div>
+    </div>
+    <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-primary">Save changes</button>
+    </div>
+    </div>
+    </div>
+    </div> *@
+
+
+</section>
+<script>
+    function formatCurrency(amount) {
+        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    var amountElements = document.getElementsByClassName("amount");
+    for (var i = 0; i < amountElements.length; i++) {
+        var amountText = amountElements[i].textContent;
+        var amount = parseFloat(amountText);
+        if (!isNaN(amount)) {
+            amountElements[i].textContent = formatCurrency(amount) + " VND";
+        }
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+        var sliderContainer = document.getElementById("slider-container");
+        if (sliderContainer) {
+            sliderContainer.parentNode.removeChild(sliderContainer);
+        }
+    });
+    var btnAdd = document.getElementById("btnAdd");
+
+    // Get the modal element
+    var modal = document.getElementById("PostModal");
+
+    // When the button is clicked, show the modal
+    btnAdd.onclick = function () {
+        modal.style.display = "block";
+    }  
+</script>

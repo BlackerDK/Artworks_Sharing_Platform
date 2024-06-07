@@ -1,0 +1,184 @@
+﻿@model AdminModel
+@{
+    Layout = "/Views/Shared/_LayoutAd.cshtml";
+    var Total = @Model.artModelStatus1.ToList().Count() + @Model.artModelStatus2.ToList().Count() + @Model.artModelStatus3.ToList().Count();
+}
+<head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        var modelst1 = @Model.artModelStatus1.ToList().Count(); 
+        var modelst2 = @Model.artModelStatus2.ToList().Count();
+        var modelst3 = @Model.artModelStatus3.ToList().Count();
+        google.charts.load('current', { 'packages': ['corechart'] });
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'Status Artworks');
+            data.addColumn('number', 'Value');
+            data.addRows([
+                ['Chờ Xác Nhận', modelst1],
+                ['Đang Bán ', modelst2],
+                ['Đã Bán', modelst3],
+            ]);
+            var options = {
+                title: 'Chart Quantity Number Artwork Status',
+                width: 900,
+                height: 500,
+                bars: 'vertical',
+                legend: 'none',
+            };
+            var chart = new google.visualization.ColumnChart(document.getElementById('column_chart'));
+            chart.draw(data, options);
+        }       
+    </script>
+</head>
+<div id="page-inner">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Admin Dashboard</h2>
+            <h5>Welcome Jhon Deo , Love to see you back. </h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-6">
+            <div class="panel panel-back noti-box">
+                <span class="icon-box bg-color-red set-icon">
+                    <i class="fa fa-user"></i>
+                </span>
+                <div class="text-box">
+                    <p class="main-text">@Model.userModels.ToList().Count()</p>
+                    <p class="text-muted">Số lượng Users</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6">
+            <div class="panel panel-back noti-box">
+                <span class="icon-box bg-color-green set-icon">
+                    <i class="fa fa-bars"></i>
+                </span>
+                <div class="text-box">
+                    <p class="main-text"  id="RevenueShow"></p>
+                    <p class="text-muted" id="RevenueMonth"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6">
+            <div class="panel panel-back noti-box">
+                <span class="icon-box bg-color-blue set-icon">
+                    <i class="fa fa-bell-o"></i>
+                </span>
+                <div class="text-box">
+                    <p class="main-text">@Model.notificationUserModels.ToList().Count() New</p>
+                    <p class="text-muted">Notifications</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-6">
+            <div class="panel panel-back noti-box">
+                <span class="icon-box bg-color-brown set-icon">
+                    <i class="fa fa-rocket"></i>
+                </span>
+                <div class="text-box">
+                    <p class="main-text">@Model.orderModel.ToList().Count()</p>
+                    <p class="text-muted">Số lượng Order</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ------------------------------------------------------------------------------------------------- -->
+    <div class="row">
+        <div class="col-md-9 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Chart Follow Artwork
+                </div>
+                <div id="column_chart"></div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-12 col-xs-12">
+            <div class="panel panel-primary text-center no-boder bg-color-green">
+                <div class="panel-body">
+                    <i class="fa fa-bar-chart-o fa-5x"></i>
+                    <h3> @Total Artworks</h3>
+                </div>
+                <div class="panel-footer back-footer-green">
+                   Số lượng artwork
+                </div>
+            </div>
+            <div class="panel panel-primary text-center no-boder bg-color-red">
+                <div class="panel-body">
+                    <i class="fa fa-edit fa-5x"></i>
+                    <h3>@Model.posterModels.ToList().Count() Poster </h3>
+                </div>
+                <div class="panel-footer back-footer-red">
+                    Số lượng người có thể đang bài
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+@section Scripts {
+    <script>
+        setTimeout(() => {
+            setInterval(() => {
+                var date = new Date();
+                var month = getMonthFromDate(date);
+                $("#RevenueMonth").text("Total Revenues in " + month);
+                checkPayment(month);
+            }, 1000);
+        }, 2000);
+        function getMonthFromDate(date) {
+            const monthIndex = date.getMonth();
+            const month = monthIndex + 1;
+            return month;
+        }
+
+        let isSuccess = false;
+        async function checkPayment(month) {
+            if (isSuccess) {
+                return;
+            } else {
+                try {
+                    const response = await fetch(
+                        "https://script.google.com/macros/s/AKfycbzQ52rqTIhTS3VMlZ-N89XqSzDi6TDsnF9CdiBmX8bYqqwYmpk1bZRlIIwxSzS8Eh3fFw/exec"
+                    );
+                    const data = await response.json();
+                    let totalRevenue = 0;
+                    if (data.data && data.data.length > 0) {
+                        var dataList = data.data;                
+                        for (const item of dataList) {
+                            const itemMonth = layThangFromDate(item["Ngày diễn ra"]);
+                            const itemRevenue = item["Giá trị"];
+                            if (itemMonth == month) {
+                                totalRevenue += itemRevenue;
+                            }
+                        }
+                        $("#RevenueShow").text(totalRevenue+" VND");
+                    } else {
+                        console.log("No data available.");
+                    }
+                } catch (error) {
+                    console.log("Error fetching or processing data:", error);
+                }
+            }
+        }
+        function calculateTotalRevenueForList(dataList, targetMonth) {
+            let totalRevenue = 0;
+
+            for (const item of dataList) {
+                const itemMonth = item["Ngày diễn ra"];
+                const itemRevenue = item["Giá trị"];
+                if (itemMonth === targetMonth) {
+                    totalRevenue += itemRevenue;
+                }
+            }
+            return totalRevenue;
+        }
+        function layThangFromDate(dateString) {
+            var dateObject = new Date(dateString);
+            var thang = dateObject.getMonth() + 1;
+            return thang;
+        }
+    </script>
+}

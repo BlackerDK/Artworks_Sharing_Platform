@@ -1,0 +1,68 @@
+﻿@model IEnumerable<ArtworkModel>
+@{
+    ViewData["Title"] = "Home Page";
+}
+<section id="primary" class="content-full-width">
+    <div class="dt-sc-hr-invisible-small"></div>
+    <div class="fullwidth-section">
+        <div class="container">
+            <div class="main-title animate" data-animation="pullDown" data-delay="100">
+                <h2 class="aligncenter">Portfolio</h2>
+                <p>A showcase of creativity, connecting artists and their vibrant works</p>
+            </div>
+        </div>
+        @{
+            var i = 0;
+        }
+        <div class="container full">
+            <main role="main" class="">
+                <article style="margin:100px">
+                    <div class="dt-sc-one-column column first">
+                        <div class="recent-gallery-container">
+                            <ul class="recent-gallery">
+                                @foreach (var item in Model)
+                                {
+                                    <li> <img src="@item.Image" alt="image" style="height: 500px" /> </li>
+                                }
+                            </ul>
+                            <div id="bx-pager">
+                                @foreach (var item in Model)
+                                {
+                                    <a href="#" data-slide-index="@i"><img src="@item.Image" alt="image" style="height: 100px" /></a>
+                                    {
+                                        i++;
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dt-sc-hr-invisible-small"> </div>
+                </article>
+            </main>
+        </div>
+        @* About me *@
+        <div class="fullwidth-section">
+            <div class="container">
+                <div class="main-title animate" data-animation="pullDown" data-delay="100">
+                    <h2 class="aligncenter"> About Me </h2>
+                    <p>Welcome to our Artwork Sharing Platform, where every stroke, shade, and shape tells a story</p>
+                </div>
+                <div class="about-section">
+                    <div class="dt-sc-one-half column first">
+                        <img src="~/images/about.png" title="" alt="">
+                    </div>
+                    <div class="dt-sc-one-half column">
+                        <h3 class="animate" data-animation="fadeInLeft" data-delay="200"> A Little Intro</h3>
+                        <p>We are a vibrant community of artists and art enthusiasts, united by our passion for creativity. Our platform is a canvas for expression, a gallery for inspiration, and a bridge connecting creators with connoisseurs. We believe in the transformative power of art, and our mission is to make it accessible to all, fostering a world where creativity knows no bounds</p>
+                        <h3 class="animate" data-animation="fadeInLeft" data-delay="300">My Exhibitions</h3>
+                        <p>This draft aims to reflect the collective spirit of the platform and its users. It’s important to tailor the content to align with the platform’s values and goals, ensuring it speaks directly to the community you wish to engage. If you have specific details or a unique vision for the platform that you’d like to include, feel free to share, and I can help refine the section further</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dt-sc-hr-invisible-small"></div>
+    </div>
+</section>
+
+
+

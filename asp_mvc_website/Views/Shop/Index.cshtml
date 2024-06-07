@@ -1,0 +1,469 @@
+﻿@model HomeModel
+@{
+    ViewData["Title"] = "Shop Page";
+}
+<style>
+    .products .product-title a:first-child {
+        width: 100%;
+    }
+</style>
+<section id="primary" class="content-full-width">
+    <div class="container">
+        <div class="main-title animate" data-animation="pullDown" data-delay="100">
+            <h3> Shop </h3>
+            <p>Explore unique art, purchase originals or prints, and support artists directly on our Shop page</p>
+        </div>
+        @inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+        @{
+            var user = HttpContextAccessor.HttpContext.Session.GetString("UserId");
+        }
+        <div class="modal" tabindex="-1" id="P_Modal" style="margin-top : 180px">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content" style="background: #333">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel" style="color: white; font: bold">Modal title</h5>
+                    </div>
+                    <div class="modal-body">
+                        <h3>You is not a Artist, You need Buy a Package to Post artwork</h3>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closePackage">Close</button>
+                        <button type="button" class="btn btn-primary" id="goPackageBtn">Go Package</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="column dt-sc-one-half space first animate" id="SuccessNoti" style="display: none" data-animation="fadeInDown" data-delay="100">
+            <div class="dt-sc-success-box aligncenter"> <span></span> <h4> Success </h4> Post new Artwork is <b> success </b> Please wait for moderation and your post will be displayed in the Shop</div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal" tabindex="-1" id="PostModal">
+            <div class="modal-dialog modal-lg modal-dialog-scrollable">
+                <div class="modal-content" style="background: #333">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel" style="color: white; font: bold">Post new Artwork</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="mb-3">
+                                <label for="title" class="col-form-label" style="color: white; font: bold">Title:</label>
+                                <input type="text" style="background: #252525; color:white" class="form-control" name="title" id="title">
+                                <div id="titleValidationMessage" style="color: red; display: none;">Please enter a Title.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="col-form-label" style="color: white; font: bold">Description:</label>
+                                <textarea name="description" id="description" class="form-control" style="height:150px;background:#252525;color:white"></textarea>
+                                <div id="descriptionValidationMessage" style="color: red; display: none;">Please enter a description.</div>
+                            </div>
+                            <div id="loading-load" style="display: none">
+                                <div class="spinner-grow text-primary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-secondary" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-success" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-danger" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-warning" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-info" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-light" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                                <div class="spinner-grow text-dark" role="status">
+                                    <span class="sr-only">Loading...</span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="price" class="col-form-label" style="color: white; font: bold">Price:</label>
+                                <input type="text" onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 46"
+                                       style="background: #252525;color:white" class="form-control" name="price" id="price">
+                                <div id="priceValidationMessage" style="color: red; display: none;">Price must be a valid number. (1.000 - 1.000.000.000 VND).</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="category" class="col-form-label" style="color: white; font: bold">Select Item:</label>
+                                <select class="form-select" style="background: #252525; color: white;" id="category" name="category">
+                                    @foreach (var item in Model.CategoryList)
+                                    {
+                                        <option value="@item.id" style="background: #252525; color: white;">@item.Name</option>
+                                    })
+                                    <option value="other" style="background: #252525; color: white;">Other</option>
+                                </select>
+                                <div id="catelogyValidationMessage" style="color: red; display: none;">Please select a catalogy.</div>
+                            </div>
+                            <div class="mb-3" id="customItemDiv" style="display: none;">
+                                <label for="categoryCustom" class="col-form-label" style="color: white; font: bold">Custom Item:</label>
+                                <input type="text" class="form-control" style="background: #252525;color:white" id="categoryCustom" name="categoryCustom" placeholder="Enter custom item">
+                            </div>
+                            <div class="mb-3">
+                                <label for="image" class="col-form-label" style="color: white; font: bold">Image:</label>
+                                <div class="profile-picture" id="p_image" style="margin:auto;background:#252525; background-size:cover;">
+                                    <h1 class="upload-icon">
+                                        <i class="fa fa-plus fa-2x" aria-hidden="true"></i>
+                                    </h1>
+                                    <input class="file-uploader"
+                                           type="file"
+                                           name="image"
+                                           onchange="upload()"
+                                           accept="image/*" />
+                                </div>
+                                <div id="imageValidationMessage" style="color: red; display: none;">Please select one image when post.</div>
+
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" id="CloseModalBtn" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="checkAi-btn">AI Description</button>
+                        <button type="button" class="btn btn-primary" id="postBtn">Post</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="fullwidth-section shop-grid">
+        <div class="sorting-products">
+            <div class="dt-sc-one-fifth column first">
+                <div class="categories">
+                    <h5>Categories</h5>
+                    <div class="selection-box">
+                        <select class="shop-dropdown" id="_selectCategory" onchange="selectCategory()">
+                            <option value="-1" selected>Choose your category</option>
+                            @foreach (var item in Model.CategoryList)
+                            {
+                                <option value="@item.id" class="fa fa-fire-extinguisher">@item.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="dt-sc-one-fifth column">
+                <div class="categories">
+                    <h5>Sort By</h5>
+                    <div class="selection-box">
+                        <select class="shop-dropdown" id="_sortBy" onchange="sortBy()">
+                            <option value="-1" selected>Sort by</option>
+                            <option value="1" class="fa fa-mortar-board">Popular Artist</option>
+                            <option value="2" class="fa fa-thumb-tack">Price</option>
+                            <option value="3" class="fa fa-child">New Artist</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            @if (user != null)
+            {
+                <div class="dt-sc-three-fifth column" style="width:50%">
+                    <div class="Search">
+                        <h5>Search</h5>
+                        <div novalidate="novalidate" id="searchform">
+                            <p class="input-text">
+                                <input id="txtSearch" class="input-field" style="height:52px; color: white" />
+                                <label class="input-label">
+                                    <i class="fa fa-search icon"></i>
+                                </label>
+                                <input type="button" id="myButton" class="submit" value="Search" style="height:52px; padding:14px;" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: inline-block;margin: 0 0 0 1.4%;">
+                    <h5 style="color:black">.</h5>
+                    @if (Model.IsPoster == "IsPoster")
+                    {
+                        <a class="dt-sc-button small type2" style="height:52px;padding:18px" data-bs-toggle="modal" data-bs-target="#PostModal">Post Artwork</a>
+                    }else{
+                        <a class="dt-sc-button small type2" style="height:52px;padding:18px" data-bs-toggle="modal" data-bs-target="#P_Modal">Post Artwork</a>
+                    }
+                    <div class="clear"> </div>
+                </div>
+            }
+            else
+            {
+                <div class="dt-sc-three-fifth column">
+                    <div class="Search">
+                        <h5>Search</h5>
+                        <div novalidate="novalidate" id="searchform">
+                            <p class="input-text">
+                                <input id="txtSearch" class="input-field" style="height:52px; color: white" />
+                                <label class="input-label">
+                                    <i class="fa fa-search icon"></i>
+                                </label>
+                                <input type="button" id="myButton" class="submit" value="Search" style="height:52px" />
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+      @*   @if (ViewBag.DupplicateId != null)
+        {
+            <div id="popupMessage" onclick="hidePopup()">
+                <div class="popup-content">
+                    <div class="column dt-sc-one-half space animate">
+                        <div class="dt-sc-info-box aligncenter">
+                            <span></span>
+                            <h4> Info </h4>
+                            <b>
+                                @{
+                                    string duplicationArtwork = ViewBag.DupplicateId as string;
+                                }
+                                <p>@duplicationArtwork</p>
+                            </b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        } *@
+
+
+        <div id="listIndex">
+            <ul class="products isotope">
+                @foreach (var item in Model.ArtworkList)
+                {
+                    <li class="product-wrapper dt-sc-one-fifth">
+                        <div class="product-container">
+                            <a href="@Url.Action("Index", "ShopDetail",new{id = item.artworkId})"><div class="product-thumb"> <img src="@item.Image" style=" height:300px" /> </div> </a>
+                            <div class="product-title">
+                                @* <a href="#" class="type1 dt-sc-button addToCartLink" data-artwork-id="@item.artworkId">
+                            <span class="fa fa-shopping-cart"></span> Add to Cart
+                            </a> *@
+                                @* <a href="/Cart/AddToCart?id=@item.artworkId" class="type1 dt-sc-button ">
+                                    <span class="fa fa-shopping-cart"></span> Add to Cart
+                                </a> *@
+                                <a style="cursor: pointer;" class="type1 dt-sc-button add-to-cart" data-aid="@item.artworkId">
+                                    <span class="fa fa-shopping-cart"></span> Add to Cart
+                                </a>
+                                @*  <a href="#" class="type1 dt-sc-button"> <span class="fa fa-unlink"></span> Options </a> *@
+                                <p>@item.Description</p>
+                            </div>
+                        </div>
+                        <div class="product-details">
+                            <h5> <a href="shop-detail.html"> @item.Title </a> </h5>
+                            <span class="amount"> @item.Price VND</span>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+        <div id="artworkList"></div>
+
+        <div class="container">
+            <div class="dt-sc-post-pagination">
+                <a class="dt-sc-button small type3 with-icon prev-post" id="btnPre"> <span> Previous </span> <i class="fa fa-hand-o-left"> </i> </a>
+                <a class="dt-sc-button small type3 with-icon next-post" id="btnNext"><i class="fa fa-hand-o-right"> </i> <span> Next </span> </a>
+            </div>
+        </div>
+        <input type="hidden" id="currentPage" value="@ViewBag.CurrentPage" />
+        <input type="hidden" id="totalPages" value="@ViewBag.TotalPages" />
+    </div>
+
+    @{
+        bool hideModal = ViewBag.HideModal != null && (bool)ViewBag.HideModal;
+    }
+</section>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="~/js/post.js"></script>
+
+<script>
+
+    $('.add-to-cart').click(function () {
+        var artworkId = $(this).data("aid")
+        var data = {
+            artworkId,
+            userId: "",
+        };
+        console.log(data);
+        console.log("aid", artworkId);
+        $.ajax({
+            dataType: "json",
+            contentType: "application/json; charset=utf-8",
+            type: "POST",
+            url: "/Cart/addToCart",
+            data: JSON.stringify(data),
+            success: function (data) {
+                console.log(data);
+                if (data.isSuccessStatusCode) {
+                    Swal.fire({
+                        position: "top-center",
+                        icon: "success",
+                        title: "Add To Cart Successfully",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    Swal.fire({
+                        position: "top-center",
+                        icon: "warning",
+                        title: "This product was in cart",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+               
+            },
+            error: function () {
+                window.location.href = "/User/Login"
+            }
+        });
+    });
+
+
+    var button = document.getElementById("myButton");
+    button.addEventListener("click", function () {
+        $.ajax({
+            url: '@Url.Action("_searchArtwork", "Shop")',
+            type: 'GET',
+            data: { txtSearch: $("#txtSearch").val(), idCategory: $("#_selectCategory").val() },
+            success: function (data) {
+                $('#listIndex').empty();
+                $('#artworkList').empty();
+                $("#artworkList").html(data);
+            }
+        });
+    });
+
+    //function selectCategory() {
+    function selectCategory() {
+        var selectValue = $("#_selectCategory").val();
+        $.ajax({
+            url: '@Url.Action("_searchArtwork", "Shop")',
+            type: 'GET',
+            data: { txtSearch: $("#txtSearch").val(), idCategory: $("#_selectCategory").val() },
+            success: function (data) {
+                $('#listIndex').empty();
+                $('#artworkList').empty();
+                $("#artworkList").html(data);
+            }
+        });
+    }
+    function sortBy() {
+        var selectValue = $("#_sortBy").val();
+        $.ajax({
+            url: '@Url.Action("_searchArtwork", "Shop")',
+            type: 'GET',
+            data: { txtSearch: $("#txtSearch").val(), idCategory: $("#_selectCategory").val(), sortBy: $("#_sortBy").val() },
+            success: function (data) {
+                $('#listIndex').empty();
+                $('#artworkList').empty();
+                $("#artworkList").html(data);
+            }
+        });
+    }
+    var btnPre = document.getElementById("btnPre");
+    btnPre.addEventListener("click", function () {
+        var currentPage = parseInt($('#currentPage').val());
+        if (currentPage > 1) {
+            $.ajax({
+                url: '@Url.Action("_searchArtwork", "Shop")',
+                type: 'GET',
+                data: {
+                    txtSearch: $("#txtSearch").val(),
+                    idCategory: $("#_selectCategory").val(),
+                    sortBy: $("#_sortBy").val(),
+                    page: currentPage - 1
+                },
+                success: function (data) {
+                    $('#listIndex').empty();
+                    $('#artworkList').empty();
+                    $('#artworkList').html(data);
+                    $('#currentPage').val(page);
+                }
+            });
+        }
+    });
+    var btnNext = document.getElementById("btnNext");
+    btnNext.addEventListener("click", function () {
+        var currentPage = parseInt($('#currentPage').val());
+        var totalPages = parseInt($('#totalPages').val());
+        if (currentPage < totalPages) {
+            $.ajax({
+                url: '@Url.Action("_searchArtwork", "Shop")',
+                type: 'GET',
+                data: {
+                    txtSearch: $("#txtSearch").val(),
+                    idCategory: $("#_selectCategory").val(),
+                    sortBy: $("#_sortBy").val(),
+                    page: currentPage + 1
+                },
+                success: function (data) {
+                    $('#listIndex').empty();
+                    $('#artworkList').empty();
+                    $('#artworkList').html(data);
+                    $('#currentPage').val(currentPage + 1);
+                }
+            });
+        }
+    });
+
+
+    document.querySelectorAll(".addToCartLink").forEach(function (link) {
+        link.addEventListener("click", function (event) {
+            event.preventDefault(); // Prevent the default behavior of the anchor tag
+
+            // Retrieve the artworkId from the data attribute of the clicked anchor tag
+            var artworkId = this.getAttribute("data-artwork-id");
+
+            // Create a form element
+            var form = document.createElement("form");
+            form.setAttribute("method", "post");
+            form.setAttribute("action", "/Cart/AddToCart"); // Set the action to the URL of your Razor Page and the name of the action method
+
+            // Create a hidden input field to pass the 'id' parameter
+            var idInput = document.createElement("input");
+            idInput.setAttribute("type", "hidden");
+            idInput.setAttribute("name", "id");
+            idInput.setAttribute("value", artworkId); // Set the value of the 'id' parameter to the retrieved artworkId
+            form.appendChild(idInput);
+
+            // Append the form to the document body and submit it
+            document.body.appendChild(form);
+            form.submit();
+        });
+    });
+
+    setTimeout(function () {
+        var popupMessage = document.getElementById('popupMessage');
+        popupMessage.parentNode.removeChild(popupMessage);
+    }, 10000); // 3000 milliseconds = 3 seconds
+
+    function hidePopup() {
+        var popupMessage = document.getElementById('popupMessage');
+        popupMessage.parentNode.removeChild(popupMessage);
+    }
+
+    // document.addEventListener('DOMContentLoaded', function () {
+    //     // Check if HideModal flag is set
+    //     if (@hideModal) {
+    //         var modal = document.getElementById('PostModal');
+    //         modal.style.display = 'none';
+    //         var urlImage = document.getElementById('image');
+    //         urlImage.style.backgroundImage = 'none';
+    //     }
+    // });
+    function formatCurrency(amount) {
+        return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+    var amountElements = document.getElementsByClassName("amount");
+    for (var i = 0; i < amountElements.length; i++) {
+        var amountText = amountElements[i].textContent;
+        var amount = parseFloat(amountText);
+        if (!isNaN(amount)) {
+            amountElements[i].textContent = formatCurrency(amount) + " VND";
+        }
+    }
+
+
+</script>
+

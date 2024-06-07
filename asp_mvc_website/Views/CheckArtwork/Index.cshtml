@@ -1,0 +1,378 @@
+﻿@model IEnumerable<GetUserNotificationDTO1>
+@{
+	Layout = "_LayoutAd";
+	var totalPage = Int64.Parse(ViewData["totalPage"].ToString());
+	var currentPage = Int64.Parse(ViewData["currentPage"].ToString()); ;
+
+}
+<style>
+	.shop_table.cart {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+		/* Style table header */
+		.shop_table.cart th {
+			background-color: #f2f2f2;
+			padding: 10px;
+			text-align: left;
+			border: 1px solid #ddd;
+		}
+
+		/* Style table body */
+		.shop_table.cart td {
+			padding: 10px;
+			text-align: left;
+			border: 1px solid #ddd;
+		}
+
+			/* Add grid lines for each column */
+			.shop_table.cart th.product-thumbnail,
+			.shop_table.cart td.product-thumbnail {
+				width: 20%;
+			}
+
+			.shop_table.cart th.product-name,
+			.shop_table.cart td.product-name {
+				width: 20%;
+			}
+
+			.shop_table.cart th.product-price,
+			.shop_table.cart td.product-price {
+				width: 20%;
+			}
+
+			.shop_table.cart th.product-subtotal,
+			.shop_table.cart td.product-subtotal {
+				width: 20%;
+			}
+
+			.shop_table.cart th.product-remove,
+			.shop_table.cart td.product-remove {
+				width: 20%;
+			}
+
+	.Accept {
+		display: inline-block;
+		padding: 5px 10px;
+		background-color: #4CAF50; /* Green */
+		color: white;
+		text-decoration: none;
+		border-radius: 3px;
+		width: 70px;
+		margin: auto;
+	}
+
+	/* Style reject button */
+	.Reject {
+		display: inline-block;
+		padding: 5px 10px;
+		background-color: #f44336; /* Red */
+		color: white;
+		text-decoration: none;
+		border-radius: 3px;
+		width: 70px;
+		margin-top: 10px;
+	}
+
+		/* Hover effects */
+		.Accept:hover,
+		.Reject:hover {
+			opacity: 0.8;
+		}
+
+	select {
+		width: 100%;
+		padding: 10px;
+		font-size: 16px;
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		appearance: none; /* Remove default dropdown arrow */
+		-webkit-appearance: none; /* Remove default dropdown arrow for Safari */
+		-moz-appearance: none; /* Remove default dropdown arrow for Firefox */
+		background-image: url('data:image/svg+xml;utf8,<svg fill="rgba(0,0,0,0)" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); /* Add custom dropdown arrow */
+		background-repeat: no-repeat;
+		background-position: right 10px top 50%;
+	}
+
+	.pagination {
+		display: flex;
+		list-style: none;
+	}
+
+		.pagination .page-item {
+			margin: 0 5px;
+		}
+
+			.pagination .page-item .page-link {
+				padding: 5px 10px;
+				border: 1px solid #ddd;
+				border-radius: 5px;
+				text-decoration: none;
+				color: #333;
+			}
+
+			.pagination .page-item.active .page-link {
+				background-color: #007bff;
+				color: #fff;
+				border-color: #007bff;
+			}
+
+	/* Style for modal body */
+	.modal-body {
+		padding: 20px;
+		text-align: center;
+	}
+
+		/* Style for the image */
+		.modal-body img {
+			width: 75%;
+			margin-bottom: 15px;
+		}
+
+		/* Style for the titles */
+		.modal-body h3 {
+			font-size: 18px;
+			margin-bottom: 10px;
+		}
+
+		/* Style for the description */
+		.modal-body p {
+			font-size: 16px;
+			margin-bottom: 10px;
+		}
+
+		/* Style for the price */
+		.modal-body .price {
+			font-size: 20px;
+			font-weight: bold;
+			color: #007bff; /* Example color */
+		}
+</style>
+<div id="page-inner">
+	@if (Model == null)
+	{
+		<h2>No have any Notification!</h2>
+	}
+	else
+	{
+		<div class="alert alert-success" id="ok-ok" style="display: none">
+			<strong>Success!</strong> Confirmed
+		</div>
+		<div class="dropdown">
+			<select id="status">
+				<option value="5">Confirm</option>
+				<option value="6">Accepted</option>
+				<option value="7">Deny</option>
+			</select>
+		</div>
+		<div id="tableContent" class="row">
+			<div class="col-md-12">
+				<div id="table-default">
+					<div class="panel panel-default">
+						<div class="panel-body">
+							<div class="table-responsive">
+								<table class="shop_table cart table table-striped table-bordered table-hover">
+									<thead>
+										<tr>
+											<th>Artwork</th>
+											<th>Title</th>
+											<th>Description</th>
+											<th>Date time</th>
+											<th>Image</th>
+											<th>Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										@foreach (var item in Model)
+										{
+											<tr class="cart_table_item">
+
+												<td class="product-thumbnail">
+													<a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal-@item.ArtWorkVM.ArtworkId"><h5>@item.ArtWorkVM.Title</h5></a>
+												</td>
+
+												<td class="product-name">
+													<h6>@item.NotificationVM.Title</h6>
+												</td>
+
+												<td class="product-subtotal">
+													<span class="amount"> @item.NotificationVM.Description</span>
+												</td>
+
+												<td class="product-status">
+													<span class="">@item.Date</span>
+												</td>
+
+												<td class="product-remove">
+													<a href=""><img src="@item.ArtWorkImageVM.Image" style="width:25%;" class="attachment-shop_thumbnail wp-post-image" alt="T_7_front" /></a>
+												</td>
+												<td>
+													@if (item.NotificationVM.notiStatus == asp_mvc_website.Enums.NotiStatus.ConfirmPost)
+													{
+														<input id="userID-@item.ArtWorkVM.ArtworkId" value="@item.ArtWorkVM.UserId" type="hidden" />
+														<button class="Accept" onclick="acceptArtwork(@item.ArtWorkVM.ArtworkId,true,@item.NotificationVM.Id)">Accept</button>
+														<button data-bs-toggle="modal" data-bs-target="#reason-@item.ArtWorkVM.ArtworkId" class="Reject" title="Reject artwork">Reject</button>
+													}
+													else if (item.NotificationVM.notiStatus == asp_mvc_website.Enums.NotiStatus.AcceptPost)
+													{
+														<h6 style="color:green">Accepted</h6>
+													}
+													else
+													{
+														<h6 style="color:red">Deny</h6>
+													}
+												</td>
+											</tr>
+											@* ================Detail Modal ===============*@
+											<div class="modal" tabindex="-1" style="margin-top : 100px" id="exampleModal-@item.ArtWorkVM.ArtworkId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title" id="staticBackdropLabel">Artwork title</h5>
+														</div>
+														<div class="modal-body">
+															<img src="@item.ArtWorkImageVM.Image" style="width:50%;" />
+															<h3> Title : @item.ArtWorkVM.Title</h3>
+															<h3>Description : @item.ArtWorkVM.Description</h3>
+															<h3>Price : @item.ArtWorkVM.Price</h3>
+														</div>
+														<div class="modal-footer">
+															<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closePackage">Close</button>
+														</div>
+													</div>
+												</div>
+											</div>
+											@* ================Deny Modal ===============*@
+											<div class="modal" tabindex="-1" style="margin-top : 100px" id="reason-@item.ArtWorkVM.ArtworkId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-dialog-centered">
+													<div class="modal-content">
+														<div class="modal-header">
+															<h5 class="modal-title" id="staticBackdropLabel">Artwork Reject</h5>
+														</div>
+														<div class="modal-body">
+															<label for="reason">Reason</label>
+															<textarea id="text-reason-@item.ArtWorkVM.ArtworkId" name="reason" rows="4" cols="50"></textarea>
+															<div id="reasonValidationMessage" style="color: red; display: none;">Please enter a reason.</div>
+														</div>
+														<div class="modal-footer">
+															<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="closePackage">Close</button>
+															<button type="button" class="Reject" onclick="acceptArtwork(@item.ArtWorkVM.ArtworkId,false,@item.NotificationVM.Id)">Reject</button>
+														</div>
+													</div>
+												</div>
+											</div>
+										}
+									</tbody>
+								</table>
+								<div style="margin-top: 25px;" class="text-center">
+									<div id="pagination" class="paging-list">
+									</div>
+								</div>
+							</div>
+
+						</div>
+					</div>
+					<!--End Advanced Tables -->
+					<div id="pagination">
+						<ul class="pagination">
+							@for (var i = 1; i <= totalPage; i++)
+							{
+								<li class="page-item @(i == currentPage ? "active" : "")">
+									<a href="#" id="page_number" class="page-link" onclick="changePage(@i)">@i</a>
+								</li>
+							}
+						</ul>
+					</div>
+				</div>
+				<div id="table-select"></div>
+			</div>
+		</div>
+	}
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script>
+	function acceptArtwork(artworkId, isAccept, notiId) {
+		var userId = document.getElementById("userID-"+artworkId).value;
+		var reason = document.getElementById("text-reason-"+artworkId).value;
+		var reasonValidationMessage = document.getElementById("reasonValidationMessage");
+		var isValid = true;
+
+		if(isAccept === false && reason ===''){
+			reasonValidationMessage.style.display = "block";
+			isValid = false;
+		}else{
+            reasonValidationMessage.style.display = "none";
+			isValid = true;
+		}
+
+		if (isValid) {
+			$.ajax({
+				url: "/CheckArtwork/CheckPost",
+				type: "POST",
+				data: { artworkId: artworkId, isAccept: isAccept, notiId: notiId, userId: userId, reason: reason },
+				success: function (data) {
+					if (data.success) {
+						$('.modal-backdrop').remove();
+						$('#reason-' + artworkId).remove();
+
+						var message = document.getElementById("ok-ok");
+						message.style.display = "block";
+						setTimeout(function () {
+							message.style.display = "none";
+							window.location.reload();
+						}, 2000);
+					}
+				},
+				error: function (xhr, status, error) {
+					console.error('Đã có lỗi xảy ra: ' + error);
+				}
+			});
+		}
+	}
+
+	var _status = $("#status").val();
+	var page = 1;
+
+	$(document).ready(function () {
+		$("#status").change(function () {
+			var status = $("#status").val();
+			$.ajax({
+				url: "/CheckArtwork/Select",
+				type: "GET", 
+				data: { status: status, page : page},
+				success: function (data) {
+					$('#table-default').empty();
+					$('#table-select').empty();
+					$("#table-select").html(data);
+					_status = status;
+				},
+				error: function (xhr, status, error) {
+					console.error('Đã có lỗi xảy ra: ' + error);
+				}
+			});
+		});
+	});
+
+	function changePage(pageNumber) {
+		$.ajax({
+			url: "/CheckArtwork/Select",
+			type: "GET",
+			data: {
+				page: pageNumber,
+				status: _status
+			},
+			success: function (data) {
+				$('#table-default').empty();
+				$('#table-select').empty();
+				$("#table-select").html(data);
+			},
+			error: function (xhr, status, error) {
+				console.error("Error:", error);
+			}
+		});
+	}
+</script>
+			

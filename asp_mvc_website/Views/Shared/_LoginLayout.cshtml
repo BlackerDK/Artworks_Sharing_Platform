@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="en" class="no-js">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewData["Title"] - ASP</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+    <meta name="author" content="Themesdesign" />
+
+    <link rel="shortcut icon" href="~/user-img/images/favicon.ico">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="~/css/bootstrap.min.css" type="text/css">
+
+    <!--Material Icon -->
+    <link rel="stylesheet" type="text/css" href="~/css/materialdesignicons.min.css" />
+
+    <!-- Custom  Css -->
+    <link rel="stylesheet" type="text/css" href="~/css/style.css" />
+
+</head>
+
+<body>
+
+    <!-- START -->
+    <div class="account-pages">
+        <div class="container">
+            <div class="row g-0 bg-white align-items-center">
+
+                <div class="col-lg-6">
+                    <div class="bg-login">
+                        <div class="bg-overlay"></div>
+                        <img src="~/images/user-img/bg-img-3.png" class="img-fluid" alt="">
+                        <div class="auth-contain">
+                            <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+                               <div class="carousel-indicators">
+                                    <button type="button" data-bs-target="#carouselExampleIndicators"
+                                            data-bs-slide-to="0" class="active" aria-current="true"
+                                            aria-label="Slide 1"></button>
+                                    <button type="button" data-bs-target="#carouselExampleIndicators"
+                                            data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                    <button type="button" data-bs-target="#carouselExampleIndicators"
+                                            data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                </div>
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <div class="text-center text-white my-4 p-4">
+                                            <h3>Artwork Sharing Platform</h3>
+                                            <p class="text-white-50 f-20 mt-3">
+                                                Every masterpiece starts with a single stroke. Sign in to make your mark
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <div class="text-center text-white my-4 p-4">
+                                            <h3>Artwork Sharing Platform</h3>
+                                            <p class="text-white-50 f-20 mt-3">
+                                                Welcome to your creative haven, where every login paints a new story.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="carousel-item">
+                                        <div class="text-center text-white my-4 p-4">
+                                            <h3>Artwork Sharing Platform</h3>
+                                            <p class="text-white-50 f-20 mt-3">
+                                                Art is the journey of a free soul—begin yours here
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end col -->
+
+                <div class="col-lg-6">
+                    <div class="auth-box">
+                        <div class="mb-4 mb-md-5 text-center">
+                            <a href="javascript:void(0);" class="auth-logo">
+                                <img src="~/images/Logo.png" height="70" alt="">
+                            </a>
+                        </div>
+                        <!--Authen body-->
+                        @RenderBody()
+                    </div>
+                    <!-- end authbox -->
+                </div>
+                <!-- end col -->
+            </div>
+            <!-- end row -->
+        </div>
+        <!-- end container -->
+    </div>>
+    <!-- END -->
+    <!-- bootstrap -->
+    <script src="~/js/bootstrap.bundle.min.js"></script>
+    <!-- CUSTOM JS -->
+    <script src="~/js/app.js"></script>
+</body>
+</html>
